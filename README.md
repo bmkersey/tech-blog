@@ -40,6 +40,12 @@
   ## Questions
   Questions? Comments? Concerns? Feel free to reach out!  
   Email: bmkersey@gmail.com  
-  GitHub: [bmkersey](https://github.com/bmkersey)  
+  GitHub: [bmkersey](https://github.com/bmkersey)
+
+  ## Links
+  [TechBlog](https://blooming-wave-15141.herokuapp.com/posts/1) 
+
+  ## Screenshots
+  ![Homepage](./images/screenshot.png)
   
   
