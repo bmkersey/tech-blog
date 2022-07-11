@@ -15,8 +15,8 @@
         <header class="header-style">
             <nav class="nav-bar mb-3">
                 <a href="/">Home</a>
-                {{#if logged_in}}
-                <a class="text-warning disabled">Welcome {{logged_name}}!</a>
+                {{#if loggedIn}}
+                <a class="text-warning disabled">Welcome User!</a>
                 <a href="/dashboard">Dashboard</a>
                 <a href="/" id="logout">Logout</a>
                 {{else}}
@@ -42,8 +42,8 @@
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    {{#if logged_in}}
-    <script src="/js/logout.js"></script>
+    {{#if loggedIn}}
+    <script src="/javascript/logout.js"></script>
     {{/if}}
 </body>
 

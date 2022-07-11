@@ -1,55 +1,101 @@
 const router = require('express').Router();
+const sequelize = require('../config/connection');
+const { Post, User, Comment } = require('../models');
+const withAuth = require('../utils/auth')
 
-const { User, Post } = require('../models');
-
-const withAuth = require('../utils/auth');
-
-router.get('/', withAuth, async (req,res) => {
-    try {
-        const userData = await User.findByPk(req.session.user_id, {
-            attributes: { exclude: ['password'] },
-            include: [{ model: Post }],
-        });
-        const user = userData.get({ plain: true });
-        res.render('dashboard', {
-            ...user,
-            logged_in: req.session.logged_in,
-            logged_name: req.session.logged_name,
-        });
-    } catch (error) {
-        res.status(500).json(error);
-    }
+router.get('/', (req, res) => {
+    Post.findAll({
+        where: {
+            // use the ID from the session
+            user_id: req.session.user_id
+        },
+        attributes: [
+            'id',
+            'title',
+            'created_at'
+        ],
+        include: [
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
+            {
+                model: User,
+                attributes: ['username']
+            }
+        ]
+    })
+    .then(dbPostData => {
+        // serialize data before passing to template
+        const posts = dbPostData.map(post => post.get({ plain: true }));
+        res.render('dashboard', { posts, loggedIn: true });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
 });
 
-router.get('/newpost', withAuth, (req, res) => {
-    try {
-        if(req.session.logged_in) {
-            res.render('new-post',{
-                logged_in: req.session.logged_in
-            });
+router.get('/edit/:id',(req,res)=>{
+    Post.findOne({
+        where: {
+            id: req.params.id
+        },
+        attributes: [
+            'id',
+            'title',
+            'created_at'
+        ],
+        include: [
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
+            {
+                model: User,
+                attributes: ['username']
+            }
+        ] 
+    })
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({ message: 'No post found with this id' });
             return;
         }
-        res.redirect('/dashboard');
-    } catch (error) {
-        res.status(500).json(error);
-    }
-    
-});
 
+        // serialize the data
+        const post = dbPostData.get({ plain: true });
 
-router.get("/edit/:id", withAuth, async (req, res) => {
-    try {
-        const postData = await Post.findByPk(req.params.id, {
-            include: [{ model: User }],
-        });
-        const post = postData.get({ plain: true });
-        res.render('edit', {
+        // pass data to template
+        res.render('edit-post', {
             post,
-            logged_in: req.session.logged_in
+            loggedIn: req.session.loggedIn
         });
-    } catch (error) {
-        res.status(500).json(error);
-    }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
 });
+
+router.get('/newpost', (req, res) => {
+    if(req.session.loggedIn) {
+        res.render('new-post',{
+                loggedIn: req.session.loggedIn
+            });
+        return;
+        }
+        res.redirect('/dashboard');    
+});
+
+
 
 module.exports = router;
