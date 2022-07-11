@@ -43,7 +43,7 @@
   GitHub: [bmkersey](https://github.com/bmkersey)
 
   ## Links
-  [TechBlog](https://blooming-wave-15141.herokuapp.com/posts/1) 
+  [TechBlog](https://blooming-wave-15141.herokuapp.com/) 
 
   ## Screenshots
   ![Homepage](./images/screenshot.png)
